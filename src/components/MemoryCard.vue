@@ -15,7 +15,7 @@
         'object-cover': card.flipped,
         'object-top': card.flipped,
       }"
-      :src="card.flipped ? card.player.image : '/emblema.svg'"
+      :src="card.flipped ? `.${card.player.image}` : '/emblema.svg'"
       :alt="card.flipped ? card.player.name : 'Card Back'"
       :aria-label="card.flipped ? card.player.name : 'Card Back'"
       :style="{
