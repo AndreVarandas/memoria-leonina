@@ -1,8 +1,8 @@
 import { Howl } from 'howler'
 
-const CARD_FLIP_SOUND_URL = '/audio/flip.ogg'
-const TADA_VICTORY_SOUND_URL = '/audio/tada.flac'
-const BLOB_SOUND_URL = '/audio/blob.ogg'
+const CARD_FLIP_SOUND_URL = './audio/flip.ogg'
+const TADA_VICTORY_SOUND_URL = './audio/tada.flac'
+const BLOB_SOUND_URL = './audio/blob.ogg'
 
 const cardFlipSound = new Howl({
   src: [CARD_FLIP_SOUND_URL],
