@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 
-import { usePlayersList } from './usePlayersList'
+import usePlayersList from './usePlayersList'
 import useSound from './useSound'
 
 /**

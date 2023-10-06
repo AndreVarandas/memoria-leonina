@@ -80,6 +80,6 @@ const players = ref([
   },
 ])
 
-export function usePlayersList() {
+export default function usePlayersList() {
   return { players }
 }
