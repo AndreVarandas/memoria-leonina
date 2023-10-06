@@ -9,3 +9,16 @@
     </ul>
   </div>
 </template>
+
+<script setup>
+import useImagePreloader from '../composables/useImagePreloader'
+import usePlayersList from '../composables/usePlayersList'
+
+const { players } = usePlayersList()
+const { preloadImages } = useImagePreloader()
+
+const imagesToPreload = players.value.map(player => player.image)
+imagesToPreload.push('/badge.svg')
+
+preloadImages(imagesToPreload)
+</script>
