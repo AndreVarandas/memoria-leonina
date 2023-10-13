@@ -1,31 +1,22 @@
 <template>
   <section class="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-3">
-    <template v-for="card in cards" :key="card.id">
-      <MemoryCard
-        :card="card"
-        @click="handleCardClick(card)"
-        :disabled="card.disabled"
-      />
-    </template>
+    <MemoryCard
+      v-for="card in cards"
+      :key="card.id"
+      :card="card"
+      @click="handleCardClick(card)"
+      :disabled="card.disabled"
+    />
   </section>
 </template>
-
 <script setup>
-/**
- * Represents a card in the game.
- *
- * @typedef {Object} Card
- * @property {number} id - The unique identifier of the card.
- * @property {boolean} flipped - Indicates if the card is currently flipped.
- * @property {boolean} matched - Indicates if the card has been matched with another card.
- * @property {Player} player - The player associated with the card.
- */
 import confetti from 'canvas-confetti'
 import Swal from 'sweetalert2/dist/sweetalert2.js'
-import { watch } from 'vue'
+import { nextTick, watch } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
 import MemoryCard from '../components/MemoryCard.vue'
+import useImagePreloader from '../composables/useImagePreloader'
 import useMemoryGame from '../composables/useMemoryGame'
 import useSound from '../composables/useSound'
 
@@ -39,9 +30,21 @@ const {
 } = useMemoryGame()
 const router = useRouter()
 const { playVictorySound, playFlipSound } = useSound()
+const { preloadImages } = useImagePreloader()
 const VICTORY_DELAY_MS = 1000
 
-// Watch the victory state and handle it when the user wins.
+const preload = async () => {
+  const imagesToPreload = cards.value.map(card => card.player.image)
+
+  await preloadImages(imagesToPreload)
+}
+
+// Preload images when cards change
+watch(cards, () => {
+  preload()
+})
+
+// Watch the victory state and handle it when the user wins
 watch(isVictory, victory => {
   if (victory) {
     handleVictory()
@@ -59,7 +62,7 @@ onBeforeRouteLeave(async () => {
   )
 
   if (!isVictory.value && hasInteractedWithCards) {
-    const anwser = await Swal.fire({
+    const answer = await Swal.fire({
       title: 'Are you sure?',
       text: 'You will lose your progress!',
       icon: 'warning',
@@ -68,7 +71,7 @@ onBeforeRouteLeave(async () => {
       cancelButtonText: 'No, stay',
     })
 
-    return anwser.isConfirmed
+    return answer.isConfirmed
   }
 
   return true
@@ -108,7 +111,7 @@ async function handleVictory() {
   playVictorySound()
 
   setTimeout(async () => {
-    const anwser = await Swal.fire({
+    const answer = await Swal.fire({
       title: 'You won!',
       text: 'Do you want to play again?',
       icon: 'success',
@@ -117,7 +120,7 @@ async function handleVictory() {
       cancelButtonText: 'No, leave',
     })
 
-    if (anwser.isConfirmed) {
+    if (answer.isConfirmed) {
       resetGame()
       isVictory.value = false
     } else {
@@ -125,4 +128,6 @@ async function handleVictory() {
     }
   }, VICTORY_DELAY_MS)
 }
+
+nextTick(preload) // Preload images when the component is mounted
 </script>
